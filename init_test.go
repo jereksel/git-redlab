@@ -8,27 +8,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMockedIO(t *testing.T) {
-
-	assert := assert.New(t)
-
-	var s string
-
-	i := mockedIO{}
-
-	i.ScanString(&s)
-
-	assert.Equal("asd", s, "Mocked Scan should return asd")
-
-}
-
 type selection1IO struct {
 	b *bytes.Buffer
 	i *int
 }
 
 func (io selection1IO) ScanString(a *string) (n int, err error) {
-	*a = "asd"
 	return 0, nil
 }
 

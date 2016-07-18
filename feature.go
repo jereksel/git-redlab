@@ -11,8 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	//https://github.com/mattn/go-redmine/pull/16
-	redmine "github.com/jereksel/go-redmine"
+	redmine "github.com/mattn/go-redmine"
 )
 
 func newFeature(g git) {
@@ -72,6 +71,20 @@ func newFeature(g git) {
 	}
 
 	fmt.Printf("Issue ID: %d\n", issue.Id)
+
+}
+
+func listIssues(g git) {
+
+	redmineURL := g.getConfig(CONFIG_REDMINE_URL)
+	redmineAPIKey := g.getConfig(CONFIG_REDMINE_API_KEY)
+	redmineProjectID, _ := strconv.Atoi(g.getConfig(CONFIG_REDMINE_PROJECT_ID))
+
+	redmineClient := redmine.NewClient(redmineURL, redmineAPIKey)
+
+	_, _ = redmineProjectID, redmineClient
+
+	redmineClient.IssuesOf(redmineProjectID)
 
 }
 

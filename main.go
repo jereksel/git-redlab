@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	cli "github.com/jawher/mow.cli"
 )
 
 type io interface {
@@ -41,31 +43,45 @@ var CONFIG_GITLAB_PROJECT_ID = "redlab.gitlab.projectid"
 
 func main() {
 
-	firstArg := os.Args[1]
-
 	g := git{"."}
 
-	if !g.IsThisGitDir() {
-		fmt.Println("fatal: Not a git repository")
-		os.Exit(1)
-	}
+	app := cli.App("git redlab", "")
+	//app.Before = func() { ensureInit(g) }
 
-	switch firstArg {
-	case "init":
-		repoInit(g, ioIpml{})
-		break
-	case "clean":
-		cleanRepo(g)
-		break
-	case "feature":
-		ensureInit(g)
-		newFeature(g)
-		break
-	default:
-		fmt.Printf("Unknown command: %s\n", firstArg)
-		os.Exit(1)
-	}
+	app.Command("init", "Initialize a git redlab support in existing git repo", func(cmd *cli.Cmd) { cmd.Action = func() { repoInit(g, ioIpml{}) } })
+	app.Command("feature", "Manage features (redmine)", func(cmd *cli.Cmd) {
+		cmd.Before = func() { ensureInit(g) }
+		cmd.Command("init", "Initialize new feature", func(cmd *cli.Cmd) { cmd.Action = func() { newFeature(g) } })
+		cmd.Command("list", "List opened features", func(cmd *cli.Cmd) { cmd.Action = func() { listIssues(g) } })
+	})
+	app.Command("clean", "Remove all redlab related configs from repo", func(cmd *cli.Cmd) { cmd.Action = func() { cleanRepo(g) } })
 
+	app.Run(os.Args)
+
+	/*
+		firstArg := os.Args[1]
+
+		if !g.IsThisGitDir() {
+			fmt.Println("fatal: Not a git repository")
+			os.Exit(1)
+		}
+
+		switch firstArg {
+		case "init":
+			repoInit(g, ioIpml{})
+			break
+		case "clean":
+			cleanRepo(g)
+			break
+		case "feature":
+			ensureInit(g)
+			newFeature(g)
+			break
+		default:
+			fmt.Printf("Unknown command: %s\n", firstArg)
+			os.Exit(1)
+		}
+	*/
 }
 
 func ensureInit(g git) {
@@ -95,5 +111,9 @@ func cleanRepo(g git) {
 }
 
 func usage() {
+	fmt.Println("git redlab <subcommand>")
+	fmt.Println("")
+	fmt.Println("Available subcommand are:")
+	fmt.Println("   init     Initialize a git redlab support in existing git repo")
 
 }

@@ -61,6 +61,14 @@ func TestGitCleanConfig(t *testing.T) {
 
 }
 
+func TestGitClearConfigThatDoesnotExist(t *testing.T) {
+
+	g := git{"/tmp/git-redlab-tests/git-here/"}
+
+	g.clearConfig("config.that.doesnotexist")
+
+}
+
 func TestGitRepoClean(t *testing.T) {
 
 	assert := assert.New(t)

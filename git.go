@@ -84,6 +84,11 @@ func (g git) putConfig(configName string, configValue string) {
 }
 
 func (g git) clearConfig(configName string) {
+
+	if g.getConfig(configName) == "" {
+		return
+	}
+
 	goToDir(g.location)
 
 	cmd := exec.Command("git", "config", "--unset-all", configName)
