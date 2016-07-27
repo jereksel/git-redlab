@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	redmine "github.com/mattn/go-redmine"
+	"github.com/ryanuber/columnize"
 )
 
 func newFeature(g git) {
@@ -44,23 +45,32 @@ func newFeature(g git) {
 
 	issueMsg := filepath.Join(dir, "ISSUE_MESSAGE")
 
+	if _, err = os.Create(issueMsg); err != nil {
+		panic(err)
+	}
+
 	cmd := exec.Command(binary, issueMsg)
 
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
 	cmd.Env = os.Environ()
 
-	if err := cmd.Start(); err != nil {
+	if err = cmd.Start(); err != nil {
 		panic(err)
 	}
 
-	if err := cmd.Wait(); err != nil {
+	if err = cmd.Wait(); err != nil {
 		panic(err)
 	}
 
 	_ = redmineClient
 
 	topic, desc := readFile(issueMsg)
+
+	if topic == "" && desc == "" {
+		fmt.Println("No topic and description given. Aborting")
+		return
+	}
 
 	redmineProjectIDInt, _ := strconv.Atoi(redmineProjectID)
 
@@ -84,7 +94,25 @@ func listIssues(g git) {
 
 	_, _ = redmineProjectID, redmineClient
 
-	redmineClient.IssuesOf(redmineProjectID)
+	fmt.Println("Issues:")
+
+	issues, err := redmineClient.IssuesOf(redmineProjectID)
+
+	if err != nil {
+		panic(err)
+	}
+
+	output := make([]string, len(issues)+2)
+
+	output[0] = "Status | Title"
+	output[1] = "  |  "
+
+	for id, issue := range issues {
+		output[id+2] = fmt.Sprintf("%s | %s", issue.Status.Name, issue.GetTitle())
+	}
+
+	result := columnize.SimpleFormat(output)
+	fmt.Println(result)
 
 }
 
