@@ -46,7 +46,7 @@ git checkout -b branch3
 git checkout -b feature/#1
 
 cd /tmp/git-redlab-tests
-git clone git@github.com:jereksel/git-redlab-testrepo.git
+git clone https://github.com/jereksel/git-redlab-testrepo.git
 mv git-redlab-testrepo remote-branches
 
 printf "LINE1" > /tmp/git-redlab-tests/oneline
