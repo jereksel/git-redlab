@@ -229,6 +229,67 @@ func (g git) getRemoteBranches() []string {
 
 }
 
+func (g git) fetch() {
+	goToDir(g.location)
+
+	cmd := exec.Command("git", "fetch")
+
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+
+	if err := cmd.Start(); err != nil {
+		panic(err)
+	}
+
+	if err := cmd.Wait(); err != nil {
+		panic(err)
+	}
+}
+
+func (g git) changeToBranch(branch string) {
+
+	goToDir(g.location)
+
+	cmd := exec.Command("git", "checkout", branch)
+
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+
+	if err := cmd.Start(); err != nil {
+		panic(err)
+	}
+
+	if err := cmd.Wait(); err != nil {
+		panic(err)
+	}
+
+}
+
+func (g git) createNewBranch(branch string) {
+
+	goToDir(g.location)
+
+	cmd := exec.Command("git", "checkout", "-b", branch)
+
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+
+	if err := cmd.Start(); err != nil {
+		panic(err)
+	}
+
+	if err := cmd.Wait(); err != nil {
+		panic(err)
+	}
+
+}
+
 func getCurrentDir() string {
 	str, err := os.Getwd()
 	if err != nil {

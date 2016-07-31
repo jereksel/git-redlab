@@ -116,6 +116,37 @@ func listIssues(g git) {
 
 }
 
+func pullIssue(g git, id int) {
+
+	if !g.isRepoClean() {
+		fmt.Println("This repository is not clean")
+		os.Exit(1)
+	}
+
+	g.fetch()
+
+	featureBranch := "feature/#" + strconv.Itoa(id)
+
+	if featureBranch == g.getCurrentBranch() {
+		return
+	} else if stringInArray(featureBranch, g.getLocalBranches()) || stringInArray(featureBranch, g.getRemoteBranches()) {
+		g.changeToBranch(featureBranch)
+	} else {
+		g.createNewBranch(featureBranch)
+	}
+
+}
+
+func stringInArray(s string, arr []string) bool {
+
+	for _, str := range arr {
+		if s == str {
+			return true
+		}
+	}
+	return false
+}
+
 func readFile(file string) (string, string) {
 
 	b, err := ioutil.ReadFile(file)

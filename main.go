@@ -51,37 +51,25 @@ func main() {
 	app.Command("init", "Initialize a git redlab support in existing git repo", func(cmd *cli.Cmd) { cmd.Action = func() { repoInit(g, ioIpml{}) } })
 	app.Command("feature", "Manage features (redmine)", func(cmd *cli.Cmd) {
 		cmd.Before = func() { ensureInit(g) }
-		cmd.Command("init", "Initialize new feature", func(cmd *cli.Cmd) { cmd.Action = func() { newFeature(g) } })
+		cmd.Command("start", "Start new feature", func(cmd *cli.Cmd) { cmd.Action = func() { newFeature(g) } })
+		cmd.Command("pull", "Pull existing feature", func(cmd *cli.Cmd) {
+
+			cmd.Spec = "--id"
+
+			var (
+				issueID = cmd.IntOpt("id", 0, "Issue id")
+			)
+
+			cmd.Action = func() {
+				pullIssue(g, *issueID)
+			}
+		})
 		cmd.Command("list", "List opened features", func(cmd *cli.Cmd) { cmd.Action = func() { listIssues(g) } })
 	})
 	app.Command("clean", "Remove all redlab related configs from repo", func(cmd *cli.Cmd) { cmd.Action = func() { cleanRepo(g) } })
 
 	app.Run(os.Args)
 
-	/*
-		firstArg := os.Args[1]
-
-		if !g.IsThisGitDir() {
-			fmt.Println("fatal: Not a git repository")
-			os.Exit(1)
-		}
-
-		switch firstArg {
-		case "init":
-			repoInit(g, ioIpml{})
-			break
-		case "clean":
-			cleanRepo(g)
-			break
-		case "feature":
-			ensureInit(g)
-			newFeature(g)
-			break
-		default:
-			fmt.Printf("Unknown command: %s\n", firstArg)
-			os.Exit(1)
-		}
-	*/
 }
 
 func ensureInit(g git) {
