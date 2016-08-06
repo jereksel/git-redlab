@@ -290,6 +290,27 @@ func (g git) createNewBranch(branch string) {
 
 }
 
+func (g git) push() {
+
+	goToDir(g.location)
+
+	cmd := exec.Command("git", "push", "origin", g.getCurrentBranch())
+
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+
+	if err := cmd.Start(); err != nil {
+		panic(err)
+	}
+
+	if err := cmd.Wait(); err != nil {
+		panic(err)
+	}
+
+}
+
 func getCurrentDir() string {
 	str, err := os.Getwd()
 	if err != nil {

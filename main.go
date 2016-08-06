@@ -65,6 +65,7 @@ func main() {
 			}
 		})
 		cmd.Command("list", "List opened features", func(cmd *cli.Cmd) { cmd.Action = func() { listIssues(g) } })
+		cmd.Command("publish", "Push changes from current feature", func(cmd *cli.Cmd) { cmd.Action = func() { publishFeature(g) } })
 	})
 	app.Command("clean", "Remove all redlab related configs from repo", func(cmd *cli.Cmd) { cmd.Action = func() { cleanRepo(g) } })
 

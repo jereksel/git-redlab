@@ -137,6 +137,10 @@ func pullIssue(g git, id int) {
 
 }
 
+func publishFeature(g git) {
+	g.push()
+}
+
 func stringInArray(s string, arr []string) bool {
 
 	for _, str := range arr {
